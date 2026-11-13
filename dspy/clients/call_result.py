@@ -84,6 +84,10 @@ def usage_dict(response: Response, provider=None):
     if data or prompt_details or completion_details:
         data["prompt_tokens_details"] = prompt_details or None
         data["completion_tokens_details"] = completion_details or None
+    if provider == "openrouter-decisions":
+        cost = response.provider_data.get("usage", {}).get("cost")
+        if isinstance(cost, (int, float)) and not isinstance(cost, bool) and 0 <= cost < float("inf"):
+            data["cost"] = cost
     return data
 
 
