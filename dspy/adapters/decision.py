@@ -92,7 +92,7 @@ class DecisionAdapter:
                 from dspy.clients.capabilities import resolve
                 from dspy.clients.requests import generation_options
 
-                if resolve(lm).provider == "openai-decisions":
+                if resolve(lm).provider in {"openai-decisions", "openrouter-decisions"}:
                     # Explicit Requests bypass LM defaults. Refuse unsupported
                     # defaults here instead of silently losing caller settings.
                     lm_kwargs = {**generation_options(lm), **lm_kwargs}

@@ -52,9 +52,9 @@ def select_backend(lm, options=None, request=None):
     if not isinstance(spec, str):
         raise TypeError("Custom engines supply their own capability contract")
     prefix = lm.model.split("/", 1)[0].split(":", 1)[0].replace("_", "-")
-    if prefix == "openai-decisions" and (spec == "litellm" or lm.model_type not in {"auto", "chat"}):
+    if prefix in {"openai-decisions", "openrouter-decisions"} and (spec == "litellm" or lm.model_type not in {"auto", "chat"}):
         raise UnsupportedFeatureError(
-            "OpenAI Decisions has no LiteLLM or chat fallback; use engine='auto' or 'lm15' "
+            "Native Decisions has no LiteLLM or chat fallback; use engine='auto' or 'lm15' "
             "and model_type='auto'."
         )
     clients = {key: val for key, val in lm.kwargs.items() if key in CLIENT_KEYS}
@@ -84,7 +84,7 @@ def select_backend(lm, options=None, request=None):
         from dspy.clients.requests import passthrough_keys
 
         extra = passthrough_keys(request)
-        if resolution.provider in {"typesafe", "openai-decisions"}:
+        if resolution.provider in {"typesafe", "openai-decisions", "openrouter-decisions"}:
             # Native decision backends accept structured instructions and criteria.
             extra -= {"questions"}
         if resolution.provider == "openrouter":
@@ -128,9 +128,9 @@ def select_backend(lm, options=None, request=None):
             native = False
     if spec == "litellm" and lm.model_type != "auto" and resolution is not None and not resolution.declared:
         resolution = None  # as before: the compatibility engine reads the model string itself
-    if resolution is not None and resolution.provider == "openai-decisions" and not native:
+    if resolution is not None and resolution.provider in {"openai-decisions", "openrouter-decisions"} and not native:
         raise UnsupportedFeatureError(
-            "OpenAI Decisions requires the native engine and native client settings; "
+            "Native Decisions requires the native engine and native client settings; "
             "it has no LiteLLM or chat fallback."
         )
     if spec == "lm15" and not native:

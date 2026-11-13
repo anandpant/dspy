@@ -306,7 +306,7 @@ class LM(BaseLM):
         if self.engine == "litellm":
             return False
         try:
-            return resolve(self).provider in {"typesafe", "openai-decisions"}
+            return resolve(self).provider in {"typesafe", "openai-decisions", "openrouter-decisions"}
         except (UnknownModelError, UnsupportedFeatureError):
             return False
 
